@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.6</version>
-        <relativePath/>
+        <artifactId>TelegramBot</artifactId>
+        <groupId>ru.nikolay</groupId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>ru.nikolay</groupId>
+    <modelVersion>4.0.0</modelVersion>
+
     <artifactId>dispatcher</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>dispatcher</name>
-    <description>dispatcher</description>
 
     <properties>
-        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <telegrambots.version>6.1.0</telegrambots.version>
-        <log4j.version>1.2.17</log4j.version>
-        <lombok.version>1.18.24</lombok.version>
     </properties>
 
     <dependencies>
@@ -30,16 +25,6 @@
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-spring-boot-starter</artifactId>
             <version>${telegrambots.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
