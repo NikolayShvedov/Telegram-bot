@@ -1,5 +1,6 @@
 # API
 http://localhost:8085 -> Dispatcher  
+http://localhost:8086 -> Node  
 http://localhost:15672 -> RabbitMQ
 
 # Docker
