@@ -4,6 +4,7 @@ http://localhost:8086 -> Node
 http://localhost:15672 -> RabbitMQ
 
 # Docker
+## 1. RabbitMQ
 
 Скачать образ rabbitmq:  
 `docker pull rabbitmq:3.11.0-management`
@@ -20,7 +21,7 @@ http://localhost:15672 -> RabbitMQ
 Запустить контейнер с rabbitmq:  
 `docker run -d --hostname rabbitmq --name rabbitmq -p 5672:5672 -p 15672:15672 -v rabbitmq_data/:rabbitmq_data --restart=unless-stopped rabbitmq:3.11.0-management`
 
-## Флаги:  
+### Флаги:  
 
 | Флаг                     |                                                              Описание                                                              |
 |--------------------------|:----------------------------------------------------------------------------------------------------------------------------------:|
@@ -28,6 +29,7 @@ http://localhost:15672 -> RabbitMQ
 | --hostname               |                            Адрес контейнера для подключения к нему внутри docker из других контейнеров                             |
 | --name                   |                                                           Имя контейнера                                                           |
 | -p                       | Порты: первый порт — тот, по которому мы будет подключаться снаружи docker, а второй — тот, который используется внутри контейнера |
+| -e                       |                                              Задает переменную окружения в контейнере                                              |
 | -v                       |                                    Примонтировать volume (том), т. е. внешнее хранилище данных                                     |
 | --restart=unless-stopped |                   Контейнер будет подниматься заново при каждом перезапуске системы (точнее, при запуске docker)                   |
 
@@ -39,10 +41,34 @@ http://localhost:15672 -> RabbitMQ
 `rabbitmqctl set_user_tags userok administrator`  
 `rabbitmqctl set_permissions -p / userok ".*" ".*" ".*"` 
 
-# Подключение к RabbitMQ через веб-интерфейс
+### Подключение к RabbitMQ через веб-интерфейс
 URL: `http://localhost:15672`  
 Username: `guest`  
 Password: `guest`  
+
+## 2. PostgreSQL
+
+Создать volume:  
+`docker volume create postgresql`
+
+Проверить местонахождение volume:  
+`docker volume inspect postgresql`  
+
+Разворачиваем PostgreSQL в Docker:  
+Windows: `docker run -d --hostname telegram_bot --name telegram_bot -p 5433:5432 -e POSTGRES_USER=userok -e POSTGRES_PASSWORD=p@ssw0rd -e POSTGRES_DB=telegram_bot -v postgresql:/var/lib/postgresql/data --restart=unless-stopped postgres:14.5`  
+Linux: `docker run -d --hostname telegram_bot --name telegram_bot -p 5433:5432 -e POSTGRES_USER=userok -e POSTGRES_PASSWORD=p@ssw0rd -e POSTGRES_DB=telegram_bot -v /data:/var/lib/postgresql/data --restart=unless-stopped postgres:14.5`
+
+Если нужно замаунтить к созданной папке в диске C, например C:\docker_volumes\postgresql, то вместо созданного volume пишем данный путь:  
+`docker run -d --hostname telegram_bot --name telegram_bot -p 5433:5432 -e POSTGRES_USER=userok -e POSTGRES_PASSWORD=p@ssw0rd -e POSTGRES_DB=telegram_bot -v C:\docker_volumes\postgresql:/var/lib/postgresql/data --restart=unless-stopped postgres:14.5`
+
+### Параметры для работы с БД
+
+| Поле         |   Значение   |
+|--------------|:------------:|
+| База данных  | telegram_bot |
+| Порт         |     5433     |
+| Пользователь |    userok    |
+| Пароль       |   p@ssw0rd   |
 
 # Полезные ссылки (Useful links)
 
