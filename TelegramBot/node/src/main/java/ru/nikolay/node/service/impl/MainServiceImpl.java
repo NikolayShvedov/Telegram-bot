@@ -7,28 +7,37 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.nikolay.commonjpa.dao.AppUserDAO;
+import ru.nikolay.commonjpa.entity.AppDocument;
 import ru.nikolay.commonjpa.entity.AppUser;
 import ru.nikolay.node.dao.RawDataDAO;
 import ru.nikolay.node.entity.RawData;
+import ru.nikolay.node.exception.UploadFileException;
+import ru.nikolay.node.service.FileService;
 import ru.nikolay.node.service.MainService;
 import ru.nikolay.node.service.ProducerService;
+import ru.nikolay.node.service.enums.ServiceCommand;
 
 import static ru.nikolay.commonjpa.entity.enums.UserState.BASIC_STATE;
 import static ru.nikolay.commonjpa.entity.enums.UserState.WAIT_FOR_EMAIL_STATE;
-import static ru.nikolay.node.service.enums.ServiceCommands.*;
+import static ru.nikolay.node.service.enums.ServiceCommand.*;
 
-@Service
 @Slf4j
+@Service
 public class MainServiceImpl implements MainService {
 
     private final RawDataDAO rawDataDAO;
     private final ProducerService producerService;
     private final AppUserDAO appUserDAO;
+    private final FileService fileService;
 
-    public MainServiceImpl(RawDataDAO rawDataDAO, ProducerService producerService, AppUserDAO appUserDAO) {
+    public MainServiceImpl(RawDataDAO rawDataDAO,
+                           ProducerService producerService,
+                           AppUserDAO appUserDAO,
+                           FileService fileService) {
         this.rawDataDAO = rawDataDAO;
         this.producerService = producerService;
         this.appUserDAO = appUserDAO;
+        this.fileService = fileService;
     }
 
     @Override
@@ -39,7 +48,8 @@ public class MainServiceImpl implements MainService {
         var text = update.getMessage().getText();
         var output = "";
 
-        if (CANCEL.equals(text)) {
+        var serviceCommand = ServiceCommand.fromValue(text);
+        if (CANCEL.equals(serviceCommand)) {
             output = cancelProcess(appUser);
         } else if (BASIC_STATE.equals(userState)) {
             output = processServiceCommand(appUser, text);
@@ -63,9 +73,17 @@ public class MainServiceImpl implements MainService {
             return;
         }
 
-        //TODO: Add save document
-        var answer = "Документ успешно загружен! Ссылка для скачивания: http://test.ru/get-doc/777";
-        sendAnswer(answer, chatId);
+        try {
+            AppDocument doc = fileService.processDoc(update.getMessage());
+            //TODO: Add document download link generation
+            var answer = "Документ успешно загружен! "
+                    + "Ссылка для скачивания: http://test.ru/get-doc/777";
+            sendAnswer(answer, chatId);
+        } catch (UploadFileException ex) {
+            log.error(ex.getMessage());
+            String error = "К сожалению, загрузка файла не удалась. Повторите попытку позже.";
+            sendAnswer(error, chatId);
+        }
     }
 
     @Override
@@ -78,14 +96,16 @@ public class MainServiceImpl implements MainService {
         }
 
         //TODO: Add save photo
-        var answer = "Фото успешно загружено! Ссылка для скачивания: http://test.ru/get-photo/777";
+        var answer = "Фото успешно загружено! " +
+                "Ссылка для скачивания: http://test.ru/get-photo/777";
         sendAnswer(answer, chatId);
     }
 
     private boolean isNotAllowToSendContent(Long chatId, AppUser appUser) {
         var userState = appUser.getState();
         if (!appUser.getIsActive()) {
-            var error = "Зарегистрируйтесь или активируйте свою учетную запись для загрузки контента.";
+            var error = "Зарегистрируйтесь или активируйте " +
+                    "свою учетную запись для загрузки контента.";
             sendAnswer(error, chatId);
             return true;
         } else if (!BASIC_STATE.equals(userState)) {
@@ -104,12 +124,13 @@ public class MainServiceImpl implements MainService {
     }
 
     private String processServiceCommand(AppUser appUser, String cmd) {
-        if (REGISTRATION.equals(cmd)) {
+        var serviceCommand = ServiceCommand.fromValue(cmd);
+        if (REGISTRATION.equals(serviceCommand)) {
             //TODO: Add registration
             return "Временно недоступно.";
-        } else if (HELP.equals(cmd)) {
+        } else if (HELP.equals(serviceCommand)) {
             return help();
-        } else if (START.equals(cmd)) {
+        } else if (START.equals(serviceCommand)) {
             return "Приветствую! Чтобы посмотреть список доступных команд введите /help";
         } else {
             return "Неизвестная команда! Чтобы посмотреть список доступных команд введите /help";
