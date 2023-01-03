@@ -73,12 +73,12 @@ Linux: `docker run -d --hostname telegram_bot --name telegram_bot -p 5433:5432 -
 # Полезные ссылки (Useful links)
 
 Установить docker на ubuntu:  
-`https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04-ru`  
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04-ru  
 Запуск rabbitmq в docker-контейнере:  
-`https://blog.bayrell.org/ru/linux/docker/26-zapusk-rabbitmq-v-docker-konteynere.html`  
+https://blog.bayrell.org/ru/linux/docker/26-zapusk-rabbitmq-v-docker-konteynere.html  
 О volume (томах) в Windows:  
-`https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c?gi=dc9c12358a93`  
-`https://www.youtube.com/watch?v=jTeDNXLFYjE&t=0s`  
+https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c?gi=dc9c12358a93  
+https://www.youtube.com/watch?v=jTeDNXLFYjE&t=0s  
 Сравнение PostgreSQL VS MongoDB в контексте jsonb:  
-`https://www.youtube.com/watch?v=SNzOZKvFZ68`  
+https://www.youtube.com/watch?v=SNzOZKvFZ68  
 
