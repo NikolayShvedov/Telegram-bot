@@ -7,4 +7,5 @@ P.S. Отличный канал, подпишись!)
 ### API
 http://localhost:8085 -> Dispatcher  
 http://localhost:8086 -> Node  
+http://localhost:8087 -> Rest service  
 http://localhost:15672 -> RabbitMQ
