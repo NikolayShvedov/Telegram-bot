@@ -1,7 +1,18 @@
+# Структура проекта
+Проект имеет микросервисную архитектуру и состоит из следующих модулей:
+* `dispatcher` - микросервис для первичной валидации входящих данных и распределения сообщений по соответствующим очередям в брокере сообщений RabbitMQ;
+* `common-rabbitmq` - модуль для размещения общего кода, связанного с брокером сообщений RabbitMQ, например названия очередей;
+* `node` - микросервис для обработки сообщений из брокера RabbitMQ;
+* `common-jpa` - модуль для размещения общего кода для сервисов, которые взаимодействуют с БД;
+* `rest-service` - микросервис для скачивания файлов из БД по ссылке;
+* `common-utils` - модуль для шифрования и дешифрования id ссылок;
+* `mail-service` - микросервис для отправки электронного письма, содержащего ссылку для подтверждения регистрации.
+
 # API
 http://localhost:8085 -> Dispatcher  
 http://localhost:8086 -> Node  
 http://localhost:8087 -> Rest service  
+http://localhost:8088 -> Mail service  
 http://localhost:15672 -> RabbitMQ
 
 # Docker
@@ -82,4 +93,6 @@ https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c?
 https://www.youtube.com/watch?v=jTeDNXLFYjE&t=0s  
 Сравнение PostgreSQL VS MongoDB в контексте jsonb:  
 https://www.youtube.com/watch?v=SNzOZKvFZ68  
+Сайт для получения временной электронной почты:  
+https://temp-mail.org/ru/  
 
