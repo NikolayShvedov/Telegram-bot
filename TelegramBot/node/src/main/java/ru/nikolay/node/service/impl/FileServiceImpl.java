@@ -17,6 +17,8 @@ import ru.nikolay.commonjpa.entity.AppPhoto;
 import ru.nikolay.commonjpa.entity.BinaryContent;
 import ru.nikolay.node.exception.UploadFileException;
 import ru.nikolay.node.service.FileService;
+import ru.nikolay.node.service.enums.LinkType;
+import ru.nikolay.utils.CryptoTool;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,16 +38,22 @@ public class FileServiceImpl implements FileService {
     @Value("${service.file_storage.uri}")
     private String fileStorageUri;
 
+    @Value("${link.address}")
+    private String linkAddress;
+
     private final AppDocumentDAO appDocumentDAO;
     private final AppPhotoDAO appPhotoDAO;
     private final BinaryContentDAO binaryContentDAO;
+    private final CryptoTool cryptoTool;
 
     public FileServiceImpl(AppDocumentDAO appDocumentDAO,
                            AppPhotoDAO appPhotoDAO,
-                           BinaryContentDAO binaryContentDAO) {
+                           BinaryContentDAO binaryContentDAO,
+                           CryptoTool cryptoTool) {
         this.appDocumentDAO = appDocumentDAO;
         this.appPhotoDAO = appPhotoDAO;
         this.binaryContentDAO = binaryContentDAO;
+        this.cryptoTool = cryptoTool;
     }
 
     @Override
@@ -64,9 +72,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public AppPhoto processPhoto(Message telegramMessage) {
-        //TODO: So far we are processing only one photo in the message
-        int lastPhoto = telegramMessage.getPhoto().size() - 1;
-        PhotoSize telegramPhoto = telegramMessage.getPhoto().get(lastPhoto);
+        var photoSizeCount = telegramMessage.getPhoto().size();
+        var photoIndex = photoSizeCount > 1 ? telegramMessage.getPhoto().size() - 1 : 0;
+        PhotoSize telegramPhoto = telegramMessage.getPhoto().get(photoIndex);
         String fileId = telegramPhoto.getFileId();
         ResponseEntity<String> response = getFilePath(fileId);
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -76,6 +84,12 @@ public class FileServiceImpl implements FileService {
         } else {
             throw new UploadFileException("Bad response from telegram service: " + response);
         }
+    }
+
+    @Override
+    public String generateLink(Long docId, LinkType linkType) {
+        var hash = cryptoTool.hashOf(docId);
+        return "http://" + linkAddress + "/" + linkType + "?id=" + hash;
     }
 
     private BinaryContent getPersistentBinaryContent(ResponseEntity<String> response) {
